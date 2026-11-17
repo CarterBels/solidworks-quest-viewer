@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SolidWorks Quest Viewer</title>
+<meta name="description" content="See your SolidWorks parts and assemblies at 1:1 scale in mixed reality on a Meta Quest, and handle them with your hands. Built on Onshape Quest Viewer by almostinventor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f8fa; --surface: #ffffff; --surface-2: #eaf1f5; --text: #0f1a22; --muted: #4d5f6b;
+  --line: #d4e0e7; --accent: #0b8fb3; --accent-ink: #ffffff; --accent-soft: #dff4fa; --code: #e8eff3;
+  --green: #1f9d4a; --orange: #c27a12; --red: #c9372c;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #071016; --surface: #0d1a22; --surface-2: #12232d; --text: #e6f2f7; --muted: #94aab6;
+    --line: #1f3542; --accent: #59e6ff; --accent-ink: #032029; --accent-soft: #0f2f3a; --code: #10222b;
+    --green: #5ee083; --orange: #ffcc73; --red: #ff7a70;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #071016; --surface: #0d1a22; --surface-2: #12232d; --text: #e6f2f7; --muted: #94aab6;
+  --line: #1f3542; --accent: #59e6ff; --accent-ink: #032029; --accent-soft: #0f2f3a; --code: #10222b;
+  --green: #5ee083; --orange: #ffcc73; --red: #ff7a70;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font); }
+a { color: var(--accent); }
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+header.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+header.top .wrap { display: flex; align-items: center; gap: 16px; height: 56px; }
+.brand { font-weight: 700; letter-spacing: .2px; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 10px; }
+.brand svg { flex: none; }
+nav.links { margin-left: auto; display: flex; gap: 18px; font-size: 14px; }
+nav.links a { color: var(--muted); text-decoration: none; }
+nav.links a:hover { color: var(--text); }
+@media (max-width: 720px) { nav.links { display: none; } }
+
+.hero { padding: 64px 0 40px; }
+.hero h1 { font-size: clamp(32px, 6vw, 52px); line-height: 1.08; margin: 0 0 16px; letter-spacing: -.5px; }
+.hero p.lead { font-size: 19px; color: var(--muted); max-width: 640px; margin: 0 0 28px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 10px; font-weight: 600; text-decoration: none; border: 1px solid var(--line); color: var(--text); background: var(--surface); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn small { font-weight: 500; opacity: .75; }
+.credit-banner { margin-top: 28px; padding: 14px 16px; border-radius: 12px; background: var(--accent-soft); border: 1px solid var(--line); font-size: 15px; }
+
+section { padding: 44px 0; border-top: 1px solid var(--line); }
+section h2 { font-size: 28px; margin: 0 0 8px; letter-spacing: -.2px; }
+section p.sub { color: var(--muted); margin: 0 0 24px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.card h3 { margin: 0 0 6px; font-size: 17px; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+.steps { counter-reset: step; display: grid; gap: 16px; }
+.step { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 20px 20px 64px; position: relative; }
+.step::before { counter-increment: step; content: counter(step); position: absolute; left: 18px; top: 18px; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-weight: 700; display: grid; place-items: center; }
+.step h3 { margin: 0 0 8px; font-size: 19px; }
+.step ol, .step ul { margin: 8px 0 0; padding-left: 20px; }
+.step li { margin: 4px 0; }
+code, pre { font-family: var(--mono); font-size: 13.5px; }
+code { background: var(--code); padding: 1px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+@media (max-width: 520px) { .step { padding: 64px 16px 18px; } .step::before { left: 16px; } }
+pre { background: var(--code); padding: 12px 14px; border-radius: 10px; overflow-x: auto; margin: 10px 0; position: relative; }
+pre code { background: none; padding: 0; }
+.copy { position: absolute; top: 8px; right: 8px; font: 600 12px var(--font); background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+.note { font-size: 14px; color: var(--muted); margin-top: 10px; }
+
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.tab { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font: 600 14px var(--font); cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.panel[hidden] { display: none; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); background: var(--surface-2); }
+tr:last-child td { border-bottom: 0; }
+td.k { font-weight: 600; white-space: nowrap; }
+.pill { display: inline-block; font: 600 12px var(--mono); padding: 2px 8px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); white-space: nowrap; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: 0; }
+
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin: 10px 0; }
+details summary { cursor: pointer; font-weight: 600; }
+details p, details ul { color: var(--muted); margin: 8px 0 0; }
+
+footer { padding: 36px 0 60px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer .credit { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; color: var(--text); margin-bottom: 18px; }
+.theme { margin-left: 8px; background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 8px; padding: 4px 8px; cursor: pointer; font: 500 13px var(--font); }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="6" width="24" height="14" rx="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="13" r="3" fill="var(--accent)"/><circle cx="17.5" cy="13" r="3" fill="var(--accent)"/></svg>
+      SolidWorks Quest Viewer
+    </a>
+    <nav class="links" aria-label="Sections">
+      <a href="#features">Features</a><a href="#install">Install</a><a href="#use">How to use</a><a href="#help">Help</a><a href="#credits">Credits</a>
+    </nav>
+    <button class="theme" id="themeBtn" type="button" aria-label="Switch light or dark">Theme</button>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <h1>Your SolidWorks model, life-size, in your hands.</h1>
+    <p class="lead">Send a part or assembly from SolidWorks to a Meta Quest with one click. It appears at 1:1 scale in your room: walk around it, pull it apart, cut through it, and move parts the way their mates allow.</p>
+    <div class="cta">
+      <a class="btn primary" data-dl="SolidWorksQuestViewer.apk" href="#install">Quest app <small>.apk</small></a>
+      <a class="btn primary" data-dl="SolidWorksQuestSender.zip" href="#install">SolidWorks add-in <small>.zip</small></a>
+      <a class="btn" data-repo href="#install">Source code</a>
+    </div>
+    <div class="credit-banner">
+      Built on <a href="https://github.com/almostinventor/onshape-quest-viewer"><b>Onshape Quest Viewer</b></a> by
+      <a href="https://github.com/almostinventor">almostinventor</a> (MIT License). The Quest app is a modified copy of that
+      project's viewer; the SolidWorks add-in takes the place of its Onshape Chrome extension.
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <h2>Features</h2>
+      <p class="sub">Everything runs on your local network. Nothing is uploaded anywhere.</p>
+      <div class="grid">
+        <div class="card"><h3>One-click send</h3><p>A <b>Quest Viewer</b> tab in SolidWorks. Click <b>Send to Quest</b>, or say "Marvin, send this to the Quest". Colours and assembled positions come across; send again after an edit and it replaces the old one where you left it.</p></div>
+        <div class="card"><h3>True 1:1 scale</h3><p>Appears at real size in mixed reality. <b>FIXED</b> (on by default) keeps it at exactly 100%; turn it off to scale with two hands.</p></div>
+        <div class="card"><h3>Big assemblies</h3><p>Repeated parts are sent once, and heavy meshes are simplified to fit the headset. A 1,700-part robot went from 19 M to 1 M triangles in seconds.</p></div>
+        <div class="card"><h3>Move by mates</h3><p><b>MOVE</b>: pinch a part to turn or slide it as its SolidWorks mates allow. Linkages follow step by step and stop at limit mates. <b>FIX PART</b> holds parts still.</p></div>
+        <div class="card"><h3>Explode and isolate</h3><p>Clap, or press <b>EXPLODE</b>, to pull the parts apart. With <b>ISOLATE</b>, parts you pull out stay where you leave them, or settle onto a table.</p></div>
+        <div class="card"><h3>Section cut</h3><p><b>CUT</b> gives you a frame you can pinch, move and tilt; everything on one side is cut away, with coloured cut faces.</p></div>
+        <div class="card"><h3>Part specs</h3><p><b>INSPECT</b>: touch a part to see its name, file, configuration, material, size, volume, area, mass and how many are in the model.</p></div>
+        <div class="card"><h3>Marvin, voice control</h3><p>Say "Marvin" and a command: "explode", "rotate", "reset", "tablet"… Offline speech recognition on the headset. A glow at the edges of your view shows what he heard.</p></div>
+        <div class="card"><h3>Hand gestures</h3><p>Draw a flat circle with your finger to spin the model, clap to explode, double-pinch to reset its scale, pinch the air with both hands to scale it in place.</p></div>
+        <div class="card"><h3>Built-in help</h3><p><b>CONTROLS</b> on the keypad: touch any button to see what it does, what to say and the gesture for it, plus a list of every gesture.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2>Install</h2>
+      <p class="sub">Two pieces: the app on the Quest, and the add-in in SolidWorks. About 15 minutes the first time.</p>
+
+      <div class="card" style="margin-bottom:16px">
+        <h3>What you need</h3>
+        <ul style="margin:6px 0 0;padding-left:20px;color:var(--muted)">
+          <li>A <b>Meta Quest 3 or 3S</b> with hand tracking on.</li>
+          <li><b>SolidWorks 2025</b> on Windows (other recent versions should work too).</li>
+          <li>The PC and the Quest on the <b>same Wi-Fi / network</b>.</li>
+          <li>A USB-C cable, once, to put the app on the Quest.</li>
+        </ul>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <h3>Put the app on the Quest</h3>
+          <ol>
+            <li><b>Turn on developer mode:</b> in the Meta Horizon phone app, open your headset's settings → <i>Developer mode</i> → on. (The first time, Meta asks you to create a free developer organisation at <a href="https://developer.oculus.com/manage/organizations/create/">developer.oculus.com</a>.) Restart the headset.</li>
+            <li><b>Download</b> <a data-dl="SolidWorksQuestViewer.apk" href="#install"><code>SolidWorksQuestViewer.apk</code></a>.</li>
+            <li><b>Install it</b>, either way:
+              <ul>
+                <li><b>With SideQuest</b> (easiest): install <a href="https://sidequestvr.com/setup-howto">SideQuest</a> on the PC, plug in the Quest, put the headset on and allow USB debugging, then drag the APK onto SideQuest.</li>
+                <li><b>With adb</b>: install <a href="https://developer.android.com/tools/releases/platform-tools">Android platform-tools</a>, plug in the Quest, allow USB debugging in the headset, then:
+                  <pre><code>adb install -r SolidWorksQuestViewer.apk</code></pre></li>
+              </ul>
+            </li>
+            <li>On the Quest, open <b>Library → (dropdown at the top) Unknown Sources → SolidWorks Quest Viewer</b>. Allow the microphone if you want voice commands.</li>
+          </ol>
+        </div>
+
+        <div class="step">
+          <h3>Add the add-in to SolidWorks</h3>
+          <ol>
+            <li><b>Download</b> <a data-dl="SolidWorksQuestSender.zip" href="#install"><code>SolidWorksQuestSender.zip</code></a> and unzip it.</li>
+            <li><b>Close SolidWorks.</b></li>
+            <li>Right-click <code>install.ps1</code> → <b>Run with PowerShell</b>, or in PowerShell in that folder:
+              <pre><code>powershell -ExecutionPolicy Bypass -File install.ps1</code></pre>
+              Click <b>Yes</b> when Windows asks for administrator rights (SolidWorks reads its add-in list from there).</li>
+            <li>Start SolidWorks and open a part or assembly: a <b>Quest Viewer</b> tab appears. If it doesn't: <i>Tools → Add-ins</i> → tick <b>Quest Viewer</b>.</li>
+          </ol>
+          <p class="note">Windows may warn that the script was downloaded from the internet: choose to run it once. To remove the add-in later: <code>install.ps1 -Uninstall</code>.</p>
+        </div>
+
+        <div class="step">
+          <h3>Pair them</h3>
+          <ol>
+            <li>Start the app on the Quest. Press the <b>gear</b> on the keypad: the <b>CONNECTION</b> screen shows an <b>address</b> (like <code>192.168.x.x:8723</code>) and a 6-character <b>code</b>.</li>
+            <li>In SolidWorks: <b>Quest Viewer → Quest settings</b>, enter both, <b>Save</b>, then <b>Test connection</b>.</li>
+            <li>Open a model and click <b>Send to Quest</b>. It appears in front of you.</li>
+          </ol>
+          <p class="note">The Quest's address comes from your router and can change; the CONNECTION screen always shows the current one. Reserving an address for the Quest in your router keeps it fixed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="use">
+    <div class="wrap">
+      <h2>How to use</h2>
+      <p class="sub">Every action has a keypad button, and most also have a voice command and a gesture. In the headset, press <b>CONTROLS</b> and touch any button to see this for it.</p>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-tab="keypad">Keypad</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="voice">Voice (Marvin)</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="gestures">Hand gestures</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="controllers">Controllers</button>
+      </div>
+
+      <div class="panel" data-panel="keypad">
+        <p class="note" style="margin:0 0 12px">The keypad floats low on your left. Pinch its ribbed side grips to move it; say "Marvin, tablet" to bring it back. Buttons marked <i>appears when…</i> only show once what they depend on is on.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Button</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td class="k">RESET</td><td>Brings the model back in front of you at 100%.</td></tr>
+            <tr><td class="k">INSPECT</td><td>Touch a part to see its specs on the holo-screen; touch it twice to isolate it.</td></tr>
+            <tr><td class="k">CUT</td><td>Section cut with a frame you pinch to move or tilt.</td></tr>
+            <tr><td class="k">ROTATE</td><td>Spins the model slowly (hidden while LOCK is on).</td></tr>
+            <tr><td class="k">LOCK</td><td>The model stays put: it can't be grabbed, pushed or thrown.</td></tr>
+            <tr><td class="k">EXPLODE</td><td>Pulls the parts apart; pinch one to pull it out.</td></tr>
+            <tr><td class="k">ISOLATE</td><td><i>Appears when EXPLODE is on.</i> Parts you pull out stay where you let go.</td></tr>
+            <tr><td class="k">LOCK PART</td><td><i>Appears when ISOLATE is on.</i> Pins the isolated part in place.</td></tr>
+            <tr><td class="k">MOVE</td><td>Pinch a part to turn or slide it as its SolidWorks mates allow.</td></tr>
+            <tr><td class="k">FIX PART</td><td><i>Appears when MOVE is on.</i> Pinch parts to hold them still (they glow orange). Double-tap to free all.</td></tr>
+            <tr><td class="k">CONTROLS</td><td>Help: touch any button to learn it instead of pressing it.</td></tr>
+            <tr><td class="k">Gear</td><td>Settings page: HOLO (hologram look), STYLE (solid / X-ray), BOX (grab box), FIXED (100% scale), SPAWN distance (1–5 ft), BRIGHTNESS, and the CONNECTION screen.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="panel" data-panel="voice" hidden>
+        <p class="note" style="margin:0 0 12px">Say <b>"Marvin"</b>, then the command. After his name (or a miss) he keeps listening a few seconds, so you can just say the command again.
+          The glow at the edges of your view: <span class="dot" style="background:var(--accent)"></span>listening
+          <span class="dot" style="background:var(--green);margin-left:10px"></span>done
+          <span class="dot" style="background:var(--orange);margin-left:10px"></span>didn't catch it
+          <span class="dot" style="background:var(--red);margin-left:10px"></span>couldn't do it.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Say "Marvin, …"</th><th>Does</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill">send this to the Quest</span> <span class="pill">send the model</span></td><td>SolidWorks sends the open model</td></tr>
+            <tr><td><span class="pill">explode</span></td><td>EXPLODE</td></tr>
+            <tr><td><span class="pill">rotate</span></td><td>ROTATE</td></tr>
+            <tr><td><span class="pill">cut</span> <span class="pill">section cut</span></td><td>CUT</td></tr>
+            <tr><td><span class="pill">inspect</span></td><td>INSPECT</td></tr>
+            <tr><td><span class="pill">lock</span> <span class="pill">unlock</span></td><td>LOCK on / off</td></tr>
+            <tr><td><span class="pill">isolate</span> <span class="pill">lock part</span></td><td>ISOLATE, LOCK PART</td></tr>
+            <tr><td><span class="pill">move</span> <span class="pill">fix part</span> <span class="pill">free all</span></td><td>MOVE, FIX PART, free every held part</td></tr>
+            <tr><td><span class="pill">reset</span> <span class="pill">recenter</span></td><td>RESET</td></tr>
+            <tr><td><span class="pill">tablet</span> <span class="pill">keypad</span></td><td>Brings the keypad back</td></tr>
+            <tr><td><span class="pill">hologram</span> <span class="pill">style</span> <span class="pill">x ray</span> <span class="pill">box</span> <span class="pill">fixed</span></td><td>The settings toggles</td></tr>
+            <tr><td><span class="pill">closer</span> <span class="pill">farther</span></td><td>Spawn distance −/+ half a foot</td></tr>
+            <tr><td><span class="pill">settings</span> <span class="pill">controls</span> <span class="pill">help</span></td><td>Gear page, CONTROLS help</td></tr>
+            <tr><td><span class="pill">thanks</span></td><td>Marvin beeps back</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="panel" data-panel="gestures" hidden>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Gesture</th><th>Does</th></tr></thead>
+          <tbody>
+            <tr><td class="k">Pinch the model</td><td>Grab it (or close your whole hand around it)</td></tr>
+            <tr><td class="k">Pinch with both hands</td><td>Turn it, and scale it when FIXED is off</td></tr>
+            <tr><td class="k">Pinch the air with both hands</td><td>Scale it in place</td></tr>
+            <tr><td class="k">Double-pinch the model</td><td>Back to 100%</td></tr>
+            <tr><td class="k">Push it with your fingers</td><td>Nudge it (not while LOCK is on)</td></tr>
+            <tr><td class="k">Clap</td><td>EXPLODE on / off, with a shockwave</td></tr>
+            <tr><td class="k">Index finger straight up, circle it flat</td><td>ROTATE on / off. A ring above your finger fills as you go: green starts it, red struck through stops it</td></tr>
+            <tr><td class="k">Pinch a part (EXPLODE)</td><td>Pull it out</td></tr>
+            <tr><td class="k">Touch a part (INSPECT)</td><td>Show its specs; twice to isolate it</td></tr>
+            <tr><td class="k">Pinch a part (MOVE)</td><td>Turn or slide it along its mates</td></tr>
+            <tr><td class="k">Pinch the frame (CUT)</td><td>Move or tilt the section cut</td></tr>
+            <tr><td class="k">Pinch the keypad's side grips</td><td>Move the keypad</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="panel" data-panel="controllers" hidden>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Button</th><th>Does</th></tr></thead>
+          <tbody>
+            <tr><td class="k">Grip</td><td>Grab (with the other controller or a hand: turn and scale)</td></tr>
+            <tr><td class="k">A / X</td><td>Bring the model back in front of you</td></tr>
+            <tr><td class="k">B / Y</td><td>EXPLODE on / off</td></tr>
+            <tr><td class="k">Thumbstick click</td><td>HOLO on / off</td></tr>
+            <tr><td class="k">Controller tip</td><td>Pushes the model and presses keypad buttons</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="help">
+    <div class="wrap">
+      <h2>Help</h2>
+      <details><summary>"Test connection" fails</summary>
+        <ul><li>Check the address and code on the Quest's CONNECTION screen (gear page) and enter them again; the address can change when the Quest reconnects to Wi-Fi.</li>
+        <li>The PC and the Quest must be on the same network (guest networks often block devices from seeing each other).</li>
+        <li>Allow SolidWorks through the Windows firewall on private networks if Windows asks.</li></ul></details>
+      <details><summary>The Quest Viewer tab doesn't appear in SolidWorks</summary>
+        <p>Tools → Add-ins → tick <b>Quest Viewer</b> (and "Start Up" to keep it on). If it isn't listed, run <code>install.ps1</code> again with SolidWorks closed and accept the administrator prompt.</p></details>
+      <details><summary>A part won't move in MOVE</summary>
+        <p>It may be held: held parts glow orange. Pinch it again to free it, or double-tap FIX PART to free everything. MOVE uses the top-level mates only (a sub-assembly moves as one piece); gear, cam and belt mates aren't followed.</p></details>
+      <details><summary>Marvin doesn't hear me</summary>
+        <p>Allow the microphone for the app (Quest settings → Apps → Permissions). Speak "Marvin" clearly, wait for the blue glow, then the command. A noisy room makes it harder.</p></details>
+      <details><summary>Where are the settings and the log?</summary>
+        <p><code>%APPDATA%\SolidWorksQuestSender\settings.json</code> (address, code, triangle budget) and <code>log.txt</code> in the same folder. The <b>Q</b> icon in the Windows notification area shows the status.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer id="credits">
+  <div class="wrap">
+    <div class="credit">
+      <b>Credits.</b> This project is built on
+      <a href="https://github.com/almostinventor/onshape-quest-viewer">Onshape Quest Viewer</a> by
+      <a href="https://github.com/almostinventor">almostinventor</a>, which views Onshape models on a Quest. Its Quest app is
+      reused here as a modified copy, under its <a href="https://github.com/almostinventor/onshape-quest-viewer/blob/main/LICENSE">MIT License</a>.
+      If you use Onshape, use the original.
+    </div>
+    <p>SolidWorks Quest Viewer is free and open source under the MIT License. Not affiliated with or endorsed by Dassault
+      Systèmes (SOLIDWORKS) or Meta (Quest). Experimental: use at your own risk; the model goes over your local network
+      unencrypted. Much of the code was written with an AI coding assistant (Claude).</p>
+    <p><a data-repo href="#">Source code</a> · <a data-releases href="#">All releases</a></p>
+  </div>
+</footer>
+
+<script>
+// Links to this repository's releases, worked out from where the page is served (owner.github.io/repo/).
+(function () {
+  var host = location.hostname, parts = location.pathname.split("/").filter(Boolean);
+  var owner = /\.github\.io$/.test(host) ? host.split(".")[0] : null;
+  var repo = owner && parts.length ? parts[0] : null;
+  if (!owner || !repo) return; // opened locally: the links fall back to the install section
+  var base = "https://github.com/" + owner + "/" + repo;
+  document.querySelectorAll("[data-dl]").forEach(function (a) { a.href = base + "/releases/latest/download/" + a.getAttribute("data-dl"); });
+  document.querySelectorAll("[data-repo]").forEach(function (a) { a.href = base; });
+  document.querySelectorAll("[data-releases]").forEach(function (a) { a.href = base + "/releases"; });
+})();
+
+// Tabs.
+document.querySelectorAll(".tab").forEach(function (t) {
+  t.addEventListener("click", function () {
+    document.querySelectorAll(".tab").forEach(function (x) { x.setAttribute("aria-selected", x === t); });
+    document.querySelectorAll(".panel").forEach(function (p) { p.hidden = p.getAttribute("data-panel") !== t.getAttribute("data-tab"); });
+  });
+});
+
+// Copy buttons on commands.
+document.querySelectorAll("pre").forEach(function (pre) {
+  var b = document.createElement("button");
+  b.className = "copy"; b.type = "button"; b.textContent = "Copy";
+  b.addEventListener("click", function () {
+    var text = pre.querySelector("code").textContent;
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () {
+      b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500);
+    }, function () {});
+  });
+  pre.appendChild(b);
+});
+
+// Light / dark switch (remembered in this browser only).
+(function () {
+  var root = document.documentElement, btn = document.getElementById("themeBtn");
+  try { var saved = localStorage.getItem("theme"); if (saved) root.setAttribute("data-theme", saved); } catch (e) {}
+  btn.addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") ? root.getAttribute("data-theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Runs the add-in's viewer client (same .NET Framework 4.8 runtime as inside SolidWorks) against a viewer. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\SolidWorksSender\ViewerClient.cs;..\..\SolidWorksSender\Json.cs;..\..\SolidWorksSender\Settings.cs" />
+    <Compile Remove="..\..\SolidWorksSender\SolidWorksExporter.cs" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+</Project>

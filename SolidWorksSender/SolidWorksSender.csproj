@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- A SolidWorks add-in: SolidWorks loads it in-process (.NET Framework 4.8), so API calls are fast. -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>SolidWorksQuestSender</AssemblyName>
+    <RootNamespace>SolidWorksQuestSender</RootNamespace>
+    <Version>0.2.0</Version>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseWindowsForms>true</UseWindowsForms>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!-- Where SolidWorks keeps its API interop assemblies. Override with -p:SolidWorksDir=... if installed elsewhere. -->
+    <SolidWorksDir Condition="'$(SolidWorksDir)' == ''">C:\Program Files\SOLIDWORKS Corp\SOLIDWORKS</SolidWorksDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <!-- Not embedded: embedding turns every 'object' return value into 'dynamic', which is very slow in the
+         per-vertex loops. They are copied next to the add-in so RegAsm can resolve them. -->
+    <Reference Include="SolidWorks.Interop.sldworks">
+      <HintPath>$(SolidWorksDir)\api\redist\SolidWorks.Interop.sldworks.dll</HintPath>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="SolidWorks.Interop.swconst">
+      <HintPath>$(SolidWorksDir)\api\redist\SolidWorks.Interop.swconst.dll</HintPath>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="SolidWorks.Interop.swpublished">
+      <HintPath>$(SolidWorksDir)\api\redist\SolidWorks.Interop.swpublished.dll</HintPath>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

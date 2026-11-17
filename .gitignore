@@ -1,0 +1,36 @@
+# Pristine clone of almostinventor/onshape-quest-viewer (update with: git -C upstream pull)
+upstream/
+
+bin/
+obj/
+*.user
+.vs/
+*.glb
+*.apk
+# Unity (Viewer/ is our copy of the upstream viewer project)
+Viewer/[Ll]ibrary/
+Viewer/[Tt]emp/
+Viewer/[Oo]bj/
+Viewer/[Bb]uild/
+Viewer/[Bb]uilds/
+Viewer/[Ll]ogs/
+Viewer/[Uu]ser[Ss]ettings/
+Viewer/[Mm]emoryCaptures/
+Viewer/.utmp/
+Viewer/*.csproj
+Viewer/*.sln
+Viewer/*.slnx
+Viewer/*.user
+Viewer/.vs/
+Viewer/.idea/
+*.pidb.meta
+*.pdb.meta
+crashlytics-build.properties
+# Meta SDK local settings (contains a locally generated token)
+Viewer/Assets/Resources/DevAgentSettings.asset*
+# Voice model (QuestViewer > Download Voice Model)
+Viewer/Assets/StreamingAssets/vosk-model/
+Viewer/Assets/StreamingAssets/vosk-model.meta
+Viewer/Assets/StreamingAssets.meta
+# Packaged downloads (tools/make-release.ps1)
+release/
